@@ -57,8 +57,6 @@ export interface Feedback {
   tasteProfileId: string; // DB에 저장된 프로필 참조
 
   // 사후 평가
-  ratings: TasteRating;
-  overallSatisfaction: number; // 1-5
   reorderIntention: number; // 0-10 (NPS)
   recommendationScore: number; // 0-10 (NPS)
 
@@ -102,11 +100,3 @@ export interface UserTasteProfile {
   updatedAt?: Date;
 }
 
-export interface TasteRating {
-  spiciness: number; // 1-5
-  saltiness: number; // 1-5
-  sweetness: number; // 1-5
-  sourness: number; // 1-5
-  portion: number; // 1-5
-  price: number; // 1-5
-}

@@ -11,7 +11,6 @@ export type {
   RewardTransaction,
   BudgetRange,
   UserTasteProfile,
-  TasteRating,
 } from './entities';
 
 // 인증 관련

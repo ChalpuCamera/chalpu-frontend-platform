@@ -35,13 +35,10 @@ app/
 ├── customer/                 # 손님 전용 페이지
 │   ├── layout.tsx            # 손님 레이아웃 (하단 네비 등)
 │   ├── page.tsx              # 손님 홈
-│   ├── restaurants/
-│   │   ├── page.tsx          # 가게 목록
+│   ├── menu/
+│   │   ├── page.tsx          # 가게-메뉴 목록
 │   │   └── [id]/
-│   │       ├── page.tsx      # 가게 상세
-│   │       └── menu/
-│   │           └── [menuId]/
-│   │               └── page.tsx  # 메뉴 상세
+│   │       └── page.tsx      # 가게-메뉴 상세
 │   ├── feedback/
 │   │   ├── verify/           # 주문 인증
 │   │   │   └── page.tsx

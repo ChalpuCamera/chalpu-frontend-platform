@@ -162,7 +162,6 @@ Refresh token을 사용하여 새로운 access token을 발급받습니다.
           }
         ],
         "feedbackCount": 42,
-        "availableFeedbackSlots": 8
       }
     ],
     "categories": ["한식", "중식", "일식", "양식"],
@@ -210,7 +209,6 @@ Refresh token을 사용하여 새로운 access token을 발급받습니다.
         "category": "string",
         "feedbackCount": 5,
         "averageRating": 4.5,
-        "availableSlots": 5
       }
     ],
     "totalFeedbackCount": 150
@@ -248,7 +246,6 @@ Refresh token을 사용하여 새로운 access token을 발급받습니다.
       "address": "string"
     },
     "feedbackInfo": {
-      "availableSlots": 5,
       "currentFeedbackCount": 5,
       "isEligible": true,
       "hasAlreadySubmitted": false

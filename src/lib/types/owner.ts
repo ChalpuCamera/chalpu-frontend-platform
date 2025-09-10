@@ -2,7 +2,7 @@
 // 사장님 페이지 데이터 타입 정의
 // ============================================================================
 
-import type { User, Restaurant, Menu, Feedback, TasteRating } from './entities';
+import type { User, Restaurant, Menu, Feedback } from './entities';
 
 // 사장님 대시보드/홈 페이지 (마이페이지)
 export interface OwnerDashboardData {
@@ -32,14 +32,13 @@ export interface MenuAnalyticsData {
   // 종합 통계 분석
   overallStats: {
     totalFeedbacks: number;
-    averageRatings: TasteRating & {
-      overall: number;
+    averageStats: {
       reorderIntention: number;
       recommendationScore: number;
     };
 
     // 항목별 분포
-    ratingDistribution: {
+    tasteDistribution: {
       spiciness: Record<1 | 2 | 3 | 4 | 5, number>;
       saltiness: Record<1 | 2 | 3 | 4 | 5, number>;
       sweetness: Record<1 | 2 | 3 | 4 | 5, number>;
@@ -115,7 +114,6 @@ export interface OwnerMenuDetailData {
   restaurant: Restaurant;
   feedbackSummary: { // 메뉴의 피드백 요약
     totalCount: number;
-    averageRating?: number;
     lastFeedbackAt?: Date;
     pendingCount?: number;
   };
@@ -126,7 +124,6 @@ export interface OwnerMenuListData {
   restaurant: Restaurant;
   menus: Array<Menu & {
     feedbackCount: number;
-    averageRating?: number;
     pendingFeedbackCount: number;
   }>;
 }

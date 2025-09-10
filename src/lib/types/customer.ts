@@ -2,7 +2,7 @@
 // 손님 페이지 데이터 타입 정의
 // ============================================================================
 
-import type { User, Restaurant, Menu, Feedback, RewardTransaction, UserTasteProfile, TasteRating } from './entities';
+import type { User, Restaurant, Menu, Feedback, RewardTransaction, UserTasteProfile } from './entities';
 
 // 사전 피드백 페이지
 export interface PreFeedbackFormData {
@@ -15,7 +15,6 @@ export interface CustomerRestaurantsData {
     Restaurant & {
       menus: Menu[];
       feedbackCount: number;
-      availableFeedbackSlots: number; // 각 메뉴당 최대 10명까지
     }
   >;
 
@@ -30,8 +29,6 @@ export interface CustomerRestaurantDetailData {
   restaurant: Restaurant;
   menus: Array<Menu & {
     feedbackCount: number;
-    averageRating?: number;
-    availableSlots: number;
   }>;
   totalFeedbackCount: number;
 }
@@ -43,7 +40,6 @@ export interface CustomerMenuDetailData {
 
   // 피드백 신청 정보
   feedbackInfo: {
-    availableSlots: number; // 남은 피드백 슬롯 (최대 10명)
     currentFeedbackCount: number;
     isEligible: boolean; // 해당 메뉴에 피드백 가능 여부
     hasAlreadySubmitted: boolean; // 이미 피드백 작성했는지
@@ -70,8 +66,6 @@ export interface OrderVerificationFormData {
 
 // 사후 피드백 페이지
 export interface PostFeedbackFormData {
-  ratings: TasteRating;
-  overallSatisfaction: number;
   reorderIntention: number;
   recommendationScore: number;
   foodPhotos?: File[]; // 선택적 업로드

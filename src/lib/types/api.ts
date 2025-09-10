@@ -2,7 +2,6 @@
 // API 응답 및 요청 타입 정의
 // ============================================================================
 
-import type { TasteRating } from './entities';
 
 // API 공통 응답 형태
 export interface ApiResponse<T> {
@@ -28,8 +27,6 @@ export interface SubmitFeedbackRequest {
   orderId: string;
 
   tasteProfileId: string; // DB에 저장된 프로필 ID 참조
-  ratings: TasteRating;
-  overallSatisfaction: number;
   reorderIntention: number;
   recommendationScore: number;
   textFeedback: string;
