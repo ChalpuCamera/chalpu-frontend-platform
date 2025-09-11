@@ -1,230 +1,360 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { BarChart3, TrendingUp, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-
-// Mock 데이터
-const mockData = {
-  owner: {
-    name: "김사장",
-    restaurantName: "맛있는 한식당",
-    restaurantCount: 2
-  },
-  stats: {
-    totalFeedbacks: 152,
-    thisMonthGrowth: 15
-  },
-  // 모든 가게의 메뉴들
-  menus: [
-    {
-      id: "1",
-      restaurantId: "1",
-      restaurantName: "맛있는 한식당",
-      name: "김치찌개",
-      feedbackCount: 23
-    },
-    {
-      id: "2",
-      restaurantId: "1",
-      restaurantName: "맛있는 한식당", 
-      name: "된장찌개",
-      feedbackCount: 18
-    },
-    {
-      id: "3",
-      restaurantId: "1",
-      restaurantName: "맛있는 한식당",
-      name: "제육볶음",
-      feedbackCount: 15
-    },
-    {
-      id: "4",
-      restaurantId: "2",
-      restaurantName: "김사장 분식",
-      name: "떡볶이",
-      feedbackCount: 32
-    },
-    {
-      id: "5",
-      restaurantId: "2",
-      restaurantName: "김사장 분식",
-      name: "김밥",
-      feedbackCount: 28
-    }
-  ],
-  monthlyTrend: [
-    { month: "1월", feedbacks: 42 },
-    { month: "2월", feedbacks: 58 },
-    { month: "3월", feedbacks: 45 },
-    { month: "4월", feedbacks: 72 },
-    { month: "5월", feedbacks: 65 },
-    { month: "6월", feedbacks: 78 }
-  ]
-};
+import React from 'react';
+import { Settings, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 
 export default function OwnerDashboardPage() {
   const router = useRouter();
   
+  const handleMenuRegister = () => {
+    router.push('/owner/menu/add');
+  };
+
+  const handleContact = () => {
+    console.log('문의하기 클릭');
+  };
+
+  const handleMenuView = () => {
+    router.push('/owner/menu');
+  };
+
+  const handleSettings = () => {
+    router.push('/owner/mypage');
+  };
+
   return (
-    <div className="min-h-screen bg-background p-5">
-      <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* 헤더 */}
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-orange-950">사장님 대시보드</h1>
+    <div className="w-[375px] min-h-screen bg-white mx-auto relative">
+      {/* Header - 정확한 높이와 위치 */}
+      <header className="flex items-center justify-between h-[44px] px-4 relative">
+        <div className="flex items-center">
+          {/* Logo */}
+          <img 
+            src="/chalpu_logo.png" 
+            alt="chalpoo" 
+            className="h-[27px] w-auto"
+          />
+        </div>
+        
+        {/* Settings Button - 정확한 위치 */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-5 w-5 p-0"
+          onClick={handleSettings}
+        >
+          <Settings className="h-5 w-5 text-black" />
+        </Button>
+      </header>
+
+      {/* Store Profile Section - Figma 정확한 위치와 크기 */}
+      <section className="px-4" style={{ paddingTop: '24px' }}>
+        <div className="flex items-center h-16">
+          {/* Profile Image - 정확한 크기와 위치 */}
+          <div className="relative mr-4">
+            <div className="w-16 h-16 bg-[#f1f3f5] rounded-full"></div>
+            {/* Inner image placeholder */}
+            <div 
+              className="absolute bg-gray-300 rounded"
+              style={{
+                width: '46px',
+                height: '46px',
+                left: '9px',
+                top: '9px'
+              }}
+            ></div>
+          </div>
+          
+          {/* Store Info */}
+          <div className="flex-1">
+            <h1 
+              className="text-[#343a40] mb-0"
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '20px',
+                fontWeight: 700,
+                lineHeight: '26px',
+                letterSpacing: '-0.4px'
+              }}
+            >
+              송파기영이네분식
+            </h1>
+            <p 
+              className="text-[#343a40]"
+              style={{
+                fontFamily: 'Pretendard, sans-serif',
+                fontSize: '14px',
+                fontWeight: 400,
+                lineHeight: '21px',
+                letterSpacing: '-0.4px',
+                marginTop: '0px'
+              }}
+            >
+              안녕하세요 사장님 👨‍🌾
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Menu Section - 정확한 간격과 위치 */}
+      <section className="px-4" style={{ paddingTop: '34px' }}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 
+            className="text-[#343a40]"
+            style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '20px',
+              fontWeight: 700,
+              lineHeight: '26px',
+              letterSpacing: '-0.4px'
+            }}
+          >
+            우리 가게 메뉴
+          </h2>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-5 w-5 p-0"
+            onClick={handleMenuView}
+          >
+            <ChevronRight className="h-5 w-5 text-black" />
+          </Button>
         </div>
 
-        {/* 사장님 정보 카드 */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarFallback className="text-xl">
-                    {mockData.owner.name[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="text-xl font-semibold">{mockData.owner.name}</h2>
-                  <p className="text-muted-foreground">
-                    {mockData.owner.restaurantName} 운영
-                  </p>
-                </div>
-              </div>
-              <Button 
-                variant="outline"
-                onClick={() => router.push("/owner/mypage")}
-              >
-                설정
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 전체 현황 */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5" />
-              <CardTitle>전체 현황</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-8">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">피드백</p>
-                <p className="text-3xl font-bold">{mockData.stats.totalFeedbacks}개</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">이번 달 성장</p>
-                <p className="text-3xl font-bold text-green-600">+{mockData.stats.thisMonthGrowth}%</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 차트와 그래프 영역 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 차트 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">차트</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-48 bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">월별 피드백 트렌드</p>
-                </div>
-              </div>
-              {/* 간단한 바 차트 시뮬레이션 */}
-              <div className="mt-4 space-y-2">
-                {mockData.monthlyTrend.slice(-3).map((month) => (
-                  <div key={month.month} className="flex items-center space-x-2">
-                    <span className="text-xs w-8">{month.month}</span>
-                    <div className="flex-1 bg-muted rounded h-2">
-                      <div 
-                        className="bg-primary rounded h-2" 
-                        style={{ width: `${(month.feedbacks / 100) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-xs w-8">{month.feedbacks}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 그래프 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">그래프</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-48 bg-muted rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">피드백 증가 추세</p>
-                </div>
-              </div>
-              {/* 간단한 통계 */}
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-muted rounded">
-                  <p className="text-xs text-muted-foreground">이번 달</p>
-                  <p className="text-lg font-bold text-green-600">+15%</p>
-                </div>
-                <div className="text-center p-3 bg-muted rounded">
-                  <p className="text-xs text-muted-foreground">지난 달</p>
-                  <p className="text-lg font-bold">+8%</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Empty State Card - 정확한 크기와 스타일 */}
+        <div 
+          className="bg-white text-center"
+          style={{
+            width: '343px',
+            height: '96px',
+            paddingTop: '14px'
+          }}
+        >
+          <p 
+            className="text-[#495057] mb-4"
+            style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 400,
+              lineHeight: '21px',
+              letterSpacing: '-0.28px'
+            }}
+          >
+            메뉴를 등록하면 손님이 평가할 수 있어요
+          </p>
+          <Button
+            onClick={handleMenuRegister}
+            className="bg-[#162456] hover:bg-[#162456]/90 text-white rounded-lg"
+            style={{
+              width: '106px',
+              height: '34px',
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 400,
+              lineHeight: '21px',
+              letterSpacing: '-0.28px'
+            }}
+          >
+            메뉴 등록하기
+          </Button>
         </div>
+      </section>
 
-        {/* 등록된 메뉴 */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-6 bg-primary rounded" />
-                <CardTitle>등록된 메뉴</CardTitle>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push("/owner/menu")}
-              >
-                전체보기
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {mockData.menus.map((menu) => (
-                <div
-                  key={menu.id}
-                  className="flex items-center justify-between py-3 px-4 hover:bg-muted/50 rounded-lg transition-colors"
+      {/* Reviews Section - 정확한 위치와 간격 */}
+      <section className="px-4" style={{ paddingTop: '49px' }}>
+        <h2 
+          className="text-[#343a40] mb-11"
+          style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: '20px',
+            fontWeight: 700,
+            lineHeight: '26px',
+            letterSpacing: '-0.4px'
+          }}
+        >
+          손님 종합 평가
+        </h2>
+
+        {/* Review Stats Cards - 정확한 그리드와 크기 */}
+        <div className="flex gap-[10px] mb-[20px]">
+          {/* Total Reviews Card */}
+          <Card className="border-[#dee2e6] rounded-lg" style={{ width: '167px', height: '87px' }}>
+            <CardContent className="p-0 relative overflow-hidden h-full">
+              <div className="p-4 relative z-10">
+                <p 
+                  className="text-[#495057] mb-1"
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 400,
+                    lineHeight: '21px',
+                    letterSpacing: '-0.28px'
+                  }}
                 >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">🍲</span>
-                    <div>
-                      <p className="font-medium">{menu.name}</p>
-                      <p className="text-sm text-muted-foreground">{menu.restaurantName}</p>
-                    </div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    피드백 {menu.feedbackCount}개
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                  총 평가 수
+                </p>
+                <p 
+                  className="text-[#343a40]"
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    lineHeight: '31px',
+                    letterSpacing: '-0.24px'
+                  }}
+                >
+                  0
+                </p>
+              </div>
+              {/* Background Circle - 정확한 위치와 크기 */}
+              <div 
+                className="absolute bg-gradient-to-br from-[#1386ff] to-[#0b5099] rounded-full"
+                style={{
+                  width: '99px',
+                  height: '99px',
+                  top: '-55px',
+                  right: '-41px'
+                }}
+              ></div>
+            </CardContent>
+          </Card>
+
+          {/* Average Score Card */}
+          <Card className="border-[#dee2e6] rounded-lg" style={{ width: '166px', height: '87px' }}>
+            <CardContent className="p-0 relative overflow-hidden h-full">
+              <div className="p-4 relative z-10">
+                <p 
+                  className="text-[#495057] mb-1"
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '14px',
+                    fontWeight: 400,
+                    lineHeight: '21px',
+                    letterSpacing: '-0.28px'
+                  }}
+                >
+                  평균 점수
+                </p>
+                <p 
+                  className="text-[#343a40]"
+                  style={{
+                    fontFamily: 'Pretendard, sans-serif',
+                    fontSize: '24px',
+                    fontWeight: 700,
+                    lineHeight: '31px',
+                    letterSpacing: '-0.24px'
+                  }}
+                >
+                  0.0
+                </p>
+              </div>
+              {/* Background Circle - 정확한 위치와 크기 */}
+              <div 
+                className="absolute bg-gradient-to-br from-[#1386ff] to-[#0b5099] rounded-full"
+                style={{
+                  width: '99px',
+                  height: '99px',
+                  top: '-55px',
+                  right: '-42px'
+                }}
+              ></div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Chart Placeholders - 정확한 크기와 간격 */}
+        <div className="space-y-[20px]">
+          <Card className="border-[#dee2e6] rounded-lg" style={{ width: '343px', height: '227px' }}>
+            <CardContent className="p-4">
+              <p 
+                className="text-[#495057]"
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  lineHeight: '21px',
+                  letterSpacing: '-0.4px'
+                }}
+              >
+                000 그래프
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-[#dee2e6] rounded-lg" style={{ width: '343px', height: '227px' }}>
+            <CardContent className="p-4">
+              <p 
+                className="text-[#495057]"
+                style={{
+                  fontFamily: 'Pretendard, sans-serif',
+                  fontSize: '14px',
+                  fontWeight: 400,
+                  lineHeight: '21px',
+                  letterSpacing: '-0.4px'
+                }}
+              >
+                000 그래프
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Recent Reviews Section - 정확한 위치와 간격 */}
+      <section className="px-4" style={{ paddingTop: '47px', paddingBottom: '32px' }}>
+        <h2 
+          className="text-[#343a40] mb-11"
+          style={{
+            fontFamily: 'Pretendard, sans-serif',
+            fontSize: '20px',
+            fontWeight: 700,
+            lineHeight: '26px',
+            letterSpacing: '-0.4px'
+          }}
+        >
+          최근 손님 평가
+        </h2>
+
+        {/* Empty State - 정확한 크기와 스타일 */}
+        <div 
+          className="bg-white text-center"
+          style={{
+            width: '343px',
+            height: '96px',
+            paddingTop: '14px'
+          }}
+        >
+          <p 
+            className="text-black mb-4"
+            style={{
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 400,
+              lineHeight: '21px',
+              letterSpacing: '-0.28px'
+            }}
+          >
+            아직 손님이 진행한 평가가 없어요
+          </p>
+          <Button
+            onClick={handleContact}
+            className="bg-[#162456] hover:bg-[#162456]/90 text-white rounded-lg"
+            style={{
+              width: '106px',
+              height: '34px',
+              fontFamily: 'Pretendard, sans-serif',
+              fontSize: '14px',
+              fontWeight: 600,
+              lineHeight: '21px',
+              letterSpacing: '-0.4px'
+            }}
+          >
+            문의하기
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }
