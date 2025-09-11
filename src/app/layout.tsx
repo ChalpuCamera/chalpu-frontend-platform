@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { BottomNav } from "@/components/ui/bottom-nav";
 
 export const metadata: Metadata = {
   title: "Feedback Platform",
@@ -15,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased pb-16`}
+        className={`pb-16`}
       >
         {children}
       </body>

@@ -3,8 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { BarChart3, TrendingUp, ChevronRight, MessageSquare, Menu as MenuIcon } from "lucide-react";
+import { BarChart3, TrendingUp, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // Mock 데이터

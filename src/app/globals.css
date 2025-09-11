@@ -3,11 +3,198 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  /* Typography - Large Titles */
+  --text-large-title-1: 36px;
+  --text-large-title-1--line-height: 43px;
+  --text-large-title-1--letter-spacing: -0.01em;
+  --text-large-title-1--font-weight: 700;
+
+  --text-large-title-2: 32px;
+  --text-large-title-2--line-height: 39px;
+  --text-large-title-2--letter-spacing: -0.01em;
+  --text-large-title-2--font-weight: 700;
+
+  /* Typography - Titles */
+  --text-title-1: 28px;
+  --text-title-1--line-height: 36px;
+  --text-title-1--letter-spacing: -0.01em;
+  --text-title-1--font-weight: 700;
+
+  --text-title-2: 24px;
+  --text-title-2--line-height: 31px;
+  --text-title-2--letter-spacing: -0.01em;
+  --text-title-2--font-weight: 700;
+
+  /* Typography - Sub Titles */
+  --text-sub-title-b: 20px;
+  --text-sub-title-b--line-height: 26px;
+  --text-sub-title-b--letter-spacing: -0.02em;
+  --text-sub-title-b--font-weight: 700;
+
+  --text-sub-title-m: 20px;
+  --text-sub-title-m--line-height: 26px;
+  --text-sub-title-m--letter-spacing: -0.02em;
+  --text-sub-title-m--font-weight: 500;
+
+  /* Typography - Headlines */
+  --text-headline-b: 18px;
+  --text-headline-b--line-height: 24px;
+  --text-headline-b--letter-spacing: -0.02em;
+  --text-headline-b--font-weight: 700;
+
+  --text-headline-m: 18px;
+  --text-headline-m--line-height: 24px;
+  --text-headline-m--letter-spacing: -0.02em;
+  --text-headline-m--font-weight: 500;
+
+  /* Typography - Body */
+  --text-body-sb: 16px;
+  --text-body-sb--line-height: 24px;
+  --text-body-sb--letter-spacing: -0.02em;
+  --text-body-sb--font-weight: 600;
+
+  --text-body-r: 16px;
+  --text-body-r--line-height: 24px;
+  --text-body-r--letter-spacing: -0.02em;
+  --text-body-r--font-weight: 400;
+
+  /* Typography - Sub Body */
+  --text-sub-body-sb: 14px;
+  --text-sub-body-sb--line-height: 21px;
+  --text-sub-body-sb--letter-spacing: -0.02em;
+  --text-sub-body-sb--font-weight: 600;
+
+  --text-sub-body-r: 14px;
+  --text-sub-body-r--line-height: 21px;
+  --text-sub-body-r--letter-spacing: -0.02em;
+  --text-sub-body-r--font-weight: 400;
+
+  /* Typography - Caption */
+  --text-caption-b: 12px;
+  --text-caption-b--line-height: 18px;
+  --text-caption-b--letter-spacing: -0.02em;
+  --text-caption-b--font-weight: 700;
+
+  --text-caption-r: 12px;
+  --text-caption-r--line-height: 18px;
+  --text-caption-r--letter-spacing: -0.02em;
+  --text-caption-r--font-weight: 400;
+
+  /* Custom Colors */
+  --color-empty: #FFFFFF;
+  
+  /* Gray Palette */
+  --color-gray-50: #F8F9FA;
+  --color-gray-100: #F1F3F5;
+  --color-gray-200: #E9ECEF;
+  --color-gray-300: #DEE2E6;
+  --color-gray-400: #CED4DA;
+  --color-gray-500: #ADB5BD;
+  --color-gray-600: #868E96;
+  --color-gray-700: #495057;
+  --color-gray-800: #343A40;
+  --color-gray-900: #212529;
+
+  /* Red Palette */
+  --color-red-50: #FFEBEE;
+  --color-red-100: #FFCCD1;
+  --color-red-200: #F49CA0;
+  --color-red-300: #FF6B6B;
+  --color-red-400: #F8535A;
+  --color-red-500: #FF4141;
+  --color-red-600: #EF373F;
+  --color-red-700: #DD2C39;
+  --color-red-800: #D02532;
+  --color-red-900: #C11625;
+  --color-red-950: #400E0C;
+
+  /* Orange Palette */
+  --color-orange-50: #FFF3E4;
+  --color-orange-100: #FFE6CC;
+  --color-orange-200: #FFCF99;
+  --color-orange-300: #FFB866;
+  --color-orange-400: #FE951C;
+  --color-orange-500: #FF8205;
+  --color-orange-600: #FF7300;
+  --color-orange-700: #FF6600;
+  --color-orange-800: #FF5900;
+  --color-orange-900: #FC4E03;
+  --color-orange-950: #3E160A;
+
+  /* Yellow Palette */
+  --color-yellow-50: #FFF3E4;
+  --color-yellow-100: #FFE6CC;
+  --color-yellow-200: #FFCF99;
+  --color-yellow-300: #FFB866;
+  --color-yellow-400: #FE951C;
+  --color-yellow-500: #FF8205;
+  --color-yellow-600: #FF7300;
+  --color-yellow-700: #FF6600;
+  --color-yellow-800: #FF5900;
+  --color-yellow-900: #FC4E03;
+  --color-yellow-950: #FC4E03;
+
+  /* Sky Palette */
+  --color-sky-50: #F1F9FF;
+  --color-sky-100: #E3F1FD;
+  --color-sky-200: #C1E5FC;
+  --color-sky-300: #8BD2FD;
+  --color-sky-400: #4EB9FA;
+  --color-sky-500: #53A4EE;
+  --color-sky-600: #2982CB;
+  --color-sky-700: #2167A3;
+  --color-sky-800: #1F5786;
+  --color-sky-900: #1D496D;
+  --color-sky-950: #132E48;
+
+  /* Blue Palette */
+  --color-blue-50: #ECF7FF;
+  --color-blue-100: #D4E6FF;
+  --color-blue-200: #B0D0FD;
+  --color-blue-300: #7DA4FE;
+  --color-blue-400: #5783FC;
+  --color-blue-500: #4677FF;
+  --color-blue-600: #3563E4;
+  --color-blue-700: #2957D6;
+  --color-blue-800: #1B47C2;
+  --color-blue-900: #1540B8;
+
+  /* Green Palette */
+  --color-green-50: #E5F6E7;
+  --color-green-100: #C1E8C4;
+  --color-green-200: #97D99E;
+  --color-green-300: #69CB76;
+  --color-green-400: #40C057;
+  --color-green-500: #00B437;
+  --color-green-600: #00A52D;
+  --color-green-700: #009321;
+  --color-green-800: #008214;
+  --color-green-900: #006200;
+  --color-green-950: #112D18;
+
+  /* Purple Palette */
+  --color-purple-50: #F7F4FE;
+  --color-purple-100: #EFEBFC;
+  --color-purple-200: #E2DAFA;
+  --color-purple-300: #CDBDF5;
+  --color-purple-400: #B497EE;
+  --color-purple-500: #A67DE8;
+  --color-purple-600: #8C4ED9;
+  --color-purple-700: #7C3BC6;
+  --color-purple-800: #641AA9;
+  --color-purple-900: #562A88;
+  --color-purple-950: #112D18;
+}
+
 @theme inline {
+  /* Border Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Semantic Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

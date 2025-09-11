@@ -1,59 +1,74 @@
 "use client";
 
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import Image from "next/image";
 
-export default function UserTypeSelectionPage() {
-  const router = useRouter();
+export default function LoginPage() {
+  const [userType, setUserType] = useState("customer");
 
-  const handleCustomerClick = () => {
-    // TODO: 역할을 저장하고 로그인 페이지로 이동
-    console.log("Customer selected");
-    router.push("/customer");
-  };
-
-  const handleOwnerClick = () => {
-    // TODO: 역할을 저장하고 로그인 페이지로 이동
-    console.log("Owner selected");
-    router.push("/owner");
+  const handleKakaoLogin = () => {
+    console.log("Kakao login initiated");
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/oauth2/authorization/${userType}/kakao`;
+    } catch (error) {
+      console.error("Kakao login failed:", error);
+      alert("로그인에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-5">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-5">
+      <div className="w-full max-w-md space-y-10">
         {/* 헤더 */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-blue-">🍽️ 찰푸</h1>
-          <p className="text-muted-foreground">어떤 역할로 서비스를 이용하시나요?</p>
+        <div className="flex flex-col items-center space-y-4">
+          <Image src="/chalpu_logo.png" alt="Logo" width={206} height={61} />
+          <p className="text-body-r text-[#595959]">
+            {userType === "customer"
+              ? "여러분의 솔직한 평가가 가게를 살립니다."
+              : "안녕하세요 사장님, 가게를 살리는 찰푸입니다."}
+          </p>
         </div>
 
-        {/* 역할 선택 카드 */}
-        <div className="space-y-4">
-          <Card 
-            className="cursor-pointer hover:border-primary transition-colors"
-            onClick={handleCustomerClick}
-          >
-            <CardHeader>
-              <div className="text-4xl mb-2">👤</div>
-              <CardTitle>손님</CardTitle>
-              <CardDescription>
-                메뉴를 주문하고 피드백을 남깁니다
-              </CardDescription>
-            </CardHeader>
-          </Card>
+        {/* 홍보 소개 이미지 */}
+        <div className="flex justify-center">
+          <Image
+            className="w-full h-auto"
+            src="/image.png"
+            alt="Promotion"
+            width={343}
+            height={256}
+          />
+        </div>
 
-          <Card 
-            className="cursor-pointer hover:border-primary transition-colors"
-            onClick={handleOwnerClick}
+        {/* 로그인 버튼 */}
+        <div className="flex flex-col gap-4">
+          <Button
+            className="rounded-[12px] w-full h-14 text-lg bg-[#FFE812] hover:bg-[#FDD835] text-[#3C1E1C] font-bold"
+            onClick={handleKakaoLogin}
           >
-            <CardHeader>
-              <div className="text-4xl mb-2">👨‍💼</div>
-              <CardTitle>사장님</CardTitle>
-              <CardDescription>
-                메뉴를 등록하고 피드백을 확인합니다
-              </CardDescription>
-            </CardHeader>
-          </Card>
+            <Image src="/kakao_icon.png" alt="Kakao" width={24} height={24} />
+            {userType === "customer"
+              ? "카카오로 계속하기"
+              : "카카오로 로그인하기"}
+          </Button>
+          {/* 사용자 분기 */}
+          <div
+            className={`text-center text-base text-[#595959] ${
+              userType === "customer" ? "font-semibold" : "font-400"
+            }`}
+            onClick={() => {
+              if (userType === "customer") {
+                setUserType("owner");
+              } else {
+                window.open("https://open.kakao.com/o/sCpB58Hh", "_blank");
+              }
+            }}
+          >
+            {userType === "customer"
+              ? "👨‍🌾 사장님으로 입장하기"
+              : "로그인에 문제가 있어요"}
+          </div>
         </div>
       </div>
     </div>

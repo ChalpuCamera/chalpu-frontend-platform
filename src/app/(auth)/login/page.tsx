@@ -1,48 +1,74 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Image from "next/image";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const [userType, setUserType] = useState("customer");
 
   const handleKakaoLogin = () => {
-    // TODO: 카카오 로그인 처리
     console.log("Kakao login initiated");
-    // 실제 구현 시 카카오 OAuth 연동
+    try {
+      window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/oauth2/authorization/${userType}/kakao`;
+    } catch (error) {
+      console.error("Kakao login failed:", error);
+      alert("로그인에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-5">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-5">
+      <div className="w-full max-w-md space-y-10">
         {/* 헤더 */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold">🔐 로그인</h1>
-          <p className="text-muted-foreground">간편하게 소셜 로그인으로 시작하세요</p>
+        <div className="flex flex-col items-center space-y-4">
+          <Image src="/chalpu_logo.png" alt="Logo" width={206} height={61} />
+          <p className="font-400 text-base text-[#595959]">
+            {userType === "customer"
+              ? "여러분의 솔직한 평가가 가게를 살립니다."
+              : "안녕하세요 사장님, 가게를 살리는 찰푸입니다."}
+          </p>
+        </div>
+
+        {/* 홍보 소개 이미지 */}
+        <div className="flex justify-center">
+          <Image
+            className="w-full h-auto"
+            src="/image.png"
+            alt="Promotion"
+            width={343}
+            height={256}
+          />
         </div>
 
         {/* 로그인 버튼 */}
-        <div className="space-y-4">
-          <Button 
-            className="w-full h-14 text-lg bg-[#FEE500] hover:bg-[#FDD835] text-black font-semibold"
+        <div className="flex flex-col gap-4">
+          <Button
+            className="rounded-[12px] w-full h-14 text-lg bg-[#FFE812] hover:bg-[#FDD835] text-[#3C1E1C] font-bold"
             onClick={handleKakaoLogin}
           >
-            <svg 
-              className="w-6 h-6 mr-2" 
-              viewBox="0 0 24 24" 
-              fill="currentColor"
-            >
-              <path d="M12 3C6.48 3 2 6.12 2 10c0 2.23 1.5 4.22 3.84 5.5-.15.48-.84 2.78-.86 2.93 0 0-.02.15.08.21.1.06.22.01.22.01.29-.04 3.36-2.2 3.88-2.57.55.08 1.17.12 1.84.12 5.52 0 10-3.12 10-7S17.52 3 12 3z"/>
-            </svg>
-            카카오톡으로 시작하기
+            <Image src="/kakao_icon.png" alt="Kakao" width={24} height={24} />
+            {userType === "customer"
+              ? "카카오로 계속하기"
+              : "카카오로 로그인하기"}
           </Button>
-        </div>
-
-        {/* 이용약관 안내 */}
-        <div className="text-center text-xs text-muted-foreground mt-8">
-          로그인 시 이용약관 및 개인정보처리방침에
-          <br />
-          동의한 것으로 간주됩니다
+          {/* 사용자 분기 */}
+          <div
+            className={`text-center text-base text-[#595959] ${
+              userType === "customer" ? "font-semibold" : "font-400"
+            }`}
+            onClick={() => {
+              if (userType === "customer") {
+                setUserType("owner");
+              } else {
+                window.open("https://open.kakao.com/o/sCpB58Hh", "_blank");
+              }
+            }}
+          >
+            {userType === "customer"
+              ? "👨‍🌾 사장님으로 입장하기"
+              : "로그인에 문제가 있어요"}
+          </div>
         </div>
       </div>
     </div>
