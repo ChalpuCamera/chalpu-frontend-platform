@@ -1,275 +1,364 @@
 "use client";
 
+import { useState, useRef, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import { ArrowLeft } from "lucide-react";
+import { useFood, useDeleteFood, useUpdateThumbnail } from "@/lib/hooks/useFood";
+import { usePhotosByFoodItem } from "@/lib/hooks/usePhoto";
+import { useJARAnalysis } from "@/lib/hooks/useJAR";
+import { useFoodReviews, getFlattenedReviews } from "@/lib/hooks/useFoodReviews";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowLeft, 
-  Edit, 
-  BarChart3, 
-  MessageSquare,
-  Users,
-  TrendingUp,
-  Calendar,
-  CheckCircle,
-  Image as ImageIcon
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-// Mock 메뉴 상세 데이터
-const mockMenuDetail = {
-  id: "1",
-  name: "김치찌개",
-  price: 8000,
-  category: "찌개류",
-  description: "정성스럽게 끓인 김치찌개입니다. 신김치와 돼지고기가 들어가 깊은 맛을 냅니다.",
-  ingredients: ["신김치", "돼지고기", "두부", "대파", "양파", "마늘"],
-  restaurant: {
-    id: "1",
-    name: "맛있는 한식당"
-  },
-  isActive: true,
-  createdAt: "2024.01.01",
-  
-  // 통계
-  stats: {
-    totalFeedbacks: 45,
-    pendingFeedbacks: 3,
-    thisMonthFeedbacks: 12,
-    averageReorderIntention: 8.5,
-    averageRecommendation: 8.2
-  },
-  
-  // 이미지
-  images: ["image1.jpg", "image2.jpg"]
-};
-
-// Mock 최근 피드백
-const mockRecentFeedbacks = [
-  {
-    id: "1",
-    customerName: "김고객",
-    reorderIntention: 9,
-    recommendationScore: 9,
-    textFeedback: "정말 맛있었어요! 김치가 잘 익어서 깊은 맛이 났습니다.",
-    createdAt: "2024.01.09 14:30",
-    hasReceipt: true,
-    photoCount: 2
-  },
-  {
-    id: "2",
-    customerName: "이손님",
-    reorderIntention: 8,
-    recommendationScore: 7,
-    textFeedback: "양도 많고 좋았어요. 김치가 조금 더 익었으면 좋겠어요.",
-    createdAt: "2024.01.08 12:15",
-    hasReceipt: true,
-    photoCount: 1
-  },
-  {
-    id: "3",
-    customerName: "박고객",
-    reorderIntention: 10,
-    recommendationScore: 10,
-    textFeedback: "진짜 맛있어요! 자주 시켜먹을 것 같아요.",
-    createdAt: "2024.01.07 11:00",
-    hasReceipt: true,
-    photoCount: 0
-  }
-];
-
-export default function MenuDetailPage({ 
-  params 
-}: { 
-  params: { foodId: string } 
-}) {
+export default function Page({ params }: { params: Promise<{ foodId: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const foodId = parseInt(resolvedParams.foodId);
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  // API 데이터 가져오기
+  const { data: menuData, isLoading } = useFood(foodId);
+  const { data: photos = [] } = usePhotosByFoodItem(foodId);
+  const { data: jarData } = useJARAnalysis(foodId);
+  const {
+    data: reviewsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFoodReviews(foodId);
+
+  const deleteFood = useDeleteFood();
+  const updateThumbnail = useUpdateThumbnail();
+
+  // 이미지 배열 구성 (thumbnail + photos)
+  const allImages = [
+    ...(menuData?.thumbnailUrl ? [{ url: menuData.thumbnailUrl, id: 'thumbnail' }] : []),
+    ...photos
+      .filter(photo => photo.imageUrl !== menuData?.thumbnailUrl) // 중복 썸네일 제거
+      .map(photo => ({ url: photo.imageUrl, id: photo.photoId }))
+  ].slice(0, 3); // 최대 3개까지만
+
+  const reviews = getFlattenedReviews(reviewsData);
+
+  // 무한 스크롤 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleEdit = () => {
+    router.push(`/owner/menu/${resolvedParams.foodId}/edit`);
+  };
+
+  const handleDelete = async () => {
+    if (confirm('정말 이 메뉴를 삭제하시겠습니까?')) {
+      try {
+        await deleteFood.mutateAsync(foodId);
+        router.push('/owner/menu');
+      } catch (error) {
+        console.error('Failed to delete food:', error);
+      }
+    }
+  };
+
+  const handleSetThumbnail = async () => {
+    const currentImage = allImages[selectedImageIndex];
+    if (currentImage && currentImage.id !== 'thumbnail') {
+      try {
+        await updateThumbnail.mutateAsync({
+          foodId,
+          photoUrl: currentImage.url
+        });
+        // 대표 사진 설정 후 선택 커서를 첫 번째(대표 사진)로 이동
+        setSelectedImageIndex(0);
+      } catch (error) {
+        console.error('Failed to update thumbnail:', error);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full mx-auto bg-white flex items-center justify-center">
+        <p className="text-gray-500">로딩중...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background p-5">
-      <div className="w-full max-w-4xl mx-auto space-y-6">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => router.back()}
+    <div className="h-screen w-full mx-auto bg-white">
+      {/* Header - 유지 */}
+      <div className="fixed top-0 left-0 right-0 bg-white z-50">
+        <div className="flex items-center justify-between h-11 px-3.5">
+          <button
+            onClick={handleBack}
+            className="flex items-center justify-center"
+          >
+            <ArrowLeft size={24} className="text-foreground" />
+          </button>
+          <button className="flex items-center justify-center">
+            <Image
+              src="/setting_icon.png"
+              alt="settings"
+              width={20}
+              height={20}
+            />
+          </button>
+        </div>
+
+        {/* Title and Actions */}
+        <div className="flex items-center justify-between px-4 py-4">
+          <h1 className="text-title-2 text-gray-800">메뉴 리포트</h1>
+          <div className="flex gap-1">
+            <button
+              onClick={handleDelete}
+              className="px-2 py-1 text-gray-800 text-body-r"
             >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold">{mockMenuDetail.name}</h1>
-              <p className="text-muted-foreground">{mockMenuDetail.restaurant.name}</p>
-            </div>
-          </div>
-          
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/owner/menu/${params.foodId}/analytics`)}
+              삭제
+            </button>
+            <button
+              onClick={handleEdit}
+              className="pl-2 py-1 text-gray-800 text-body-r"
             >
-              <BarChart3 className="mr-2 h-4 w-4" />
-              통계 분석
-            </Button>
-            <Button
-              onClick={() => router.push(`/owner/menu/${params.foodId}/edit`)}
-            >
-              <Edit className="mr-2 h-4 w-4" />
               수정
-            </Button>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - pt 추가하여 헤더 공간 확보 */}
+      <div className="pt-[104px] pb-6">
+        {/* Main Image */}
+        <div className="w-full h-[220px]">
+          {allImages.length > 0 ? (
+            <Image
+              src={allImages[selectedImageIndex]?.url || "/kimchi.png"}
+              alt={menuData?.foodName || "메뉴 이미지"}
+              width={375}
+              height={220}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <p className="text-gray-500">이미지 없음</p>
+            </div>
+          )}
+        </div>
+
+        {/* Thumbnail Indicator with Set as Thumbnail Button */}
+        <div className="bg-white px-4 py-2.5">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1.5">
+              {(allImages.length > 0 ? allImages : [{ url: '/kimchi.png', id: 'default' }]).map((image, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImageIndex(index)}
+                className="flex flex-col items-center"
+              >
+                  <div className="w-[38px] h-[38px] rounded-md overflow-hidden">
+                    <Image
+                      src={image.url}
+                      alt={`메뉴 이미지 ${index + 1}`}
+                      width={38}
+                      height={38}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  {selectedImageIndex === index && (
+                    <div className="h-1 bg-gray-500 rounded-md w-[26px] mt-1" />
+                  )}
+                </button>
+              ))}
+            </div>
+            {/* 대표 사진 설정 버튼 - 선택된 이미지가 thumbnail이 아닐 때만 표시 */}
+            {allImages.length > 0 &&
+             selectedImageIndex < allImages.length &&
+             allImages[selectedImageIndex].id !== 'thumbnail' && (
+              <Button
+                onClick={handleSetThumbnail}
+                className="text-xs h-7 px-2 bg-primary text-white rounded-md"
+                disabled={updateThumbnail.isPending}
+              >
+                대표 사진 설정
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* 메뉴 기본 정보 */}
-        <Card>
-          <CardHeader>
-            <CardTitle>메뉴 정보</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {/* 메뉴 이미지 */}
-              <div className="grid grid-cols-2 gap-4">
-                {mockMenuDetail.images.map((_, index) => (
-                  <div key={index} className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                    <span className="text-4xl">🍲</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* 기본 정보 */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">카테고리</p>
-                  <p className="font-medium">{mockMenuDetail.category}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">가격</p>
-                  <p className="font-medium">{mockMenuDetail.price.toLocaleString()}원</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">상태</p>
-                  <Badge variant={mockMenuDetail.isActive ? "default" : "destructive"}>
-                    {mockMenuDetail.isActive ? "판매중" : "판매중지"}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">등록일</p>
-                  <p className="font-medium">{mockMenuDetail.createdAt}</p>
-                </div>
-              </div>
-
-              {/* 설명 */}
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">메뉴 설명</p>
-                <p className="text-sm">{mockMenuDetail.description}</p>
-              </div>
-
-              {/* 재료 */}
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">주요 재료</p>
-                <div className="flex flex-wrap gap-2">
-                  {mockMenuDetail.ingredients.map((ingredient) => (
-                    <Badge key={ingredient} variant="secondary">
-                      {ingredient}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 통계 요약 */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">총 피드백</p>
-                  <p className="text-2xl font-bold">{mockMenuDetail.stats.totalFeedbacks}</p>
-                </div>
-                <MessageSquare className="h-8 w-8 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">이번달</p>
-                  <p className="text-2xl font-bold">{mockMenuDetail.stats.thisMonthFeedbacks}</p>
-                </div>
-                <Calendar className="h-8 w-8 text-muted-foreground" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">재주문 의향</p>
-                  <p className="text-2xl font-bold">{mockMenuDetail.stats.averageReorderIntention}</p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-600" />
-              </div>
-            </CardContent>
-          </Card>
-
+        {/* Menu Info */}
+        <div className="px-4 py-4 flex items-center justify-between">
+          <h2 className="text-sub-title-m text-gray-800">
+            {menuData?.foodName}
+          </h2>
+          <span className="text-headline-b text-gray-900">
+            {menuData?.price?.toLocaleString()}원
+          </span>
         </div>
 
-        {/* 최근 피드백 */}
-        <Card>
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>최근 피드백</CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => router.push(`/owner/feedbacks?menuId=${params.foodId}`)}
+        {/* Description */}
+        <div className="px-4 mb-6">
+          <div className="bg-gray-100 rounded-xl p-4">
+            <p className="text-body-r text-gray-800 text-center whitespace-pre-line leading-relaxed">
+              {menuData?.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Menu Stats */}
+        <div className="px-4 mb-4">
+          <h3 className="text-sub-title-b text-gray-800 mb-4">
+            메뉴 평가 리포트
+          </h3>
+          <div className="flex gap-2">
+            <div className="relative flex-1 h-22 bg-white border border-gray-300 rounded-lg p-3 flex flex-col justify-between overflow-hidden">
+              <div className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-[#1386FF] to-[#0B5099] -top-15 -right-15" />
+              <div className="relative z-10">
+                <p className="text-sub-body-r text-gray-700">평가 수</p>
+                <p className="text-title-2 text-gray-800">{jarData?.npsScore?.totalResponses || 23}</p>
+              </div>
+            </div>
+            <div className="relative flex-1 h-22 bg-white border border-gray-300 rounded-lg p-3 flex flex-col justify-between overflow-hidden">
+              <div className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-[#1386FF] to-[#0B5099] -top-15 -right-15" />
+              <div className="relative z-10">
+                <p className="text-sub-body-r text-gray-700">평점</p>
+                <p className="text-title-2 text-gray-800">
+                  {jarData?.results && jarData.results.length > 0
+                    ? (() => {
+                        const avgScore = jarData.results.reduce((sum, item) =>
+                          sum + item.overallMeanScore, 0) / jarData.results.length;
+                        return (avgScore / 2).toFixed(1);
+                      })()
+                    : 4.4}
+                </p>
+              </div>
+            </div>
+            <div className="relative flex-1 h-22 bg-white border border-gray-300 rounded-lg p-3 flex flex-col justify-between overflow-hidden">
+              <div className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-[#1386FF] to-[#0B5099] -top-15 -right-15" />
+              <div className="relative z-10">
+                <p className="text-sub-body-r text-gray-700">재주문률</p>
+                <p className="text-title-2 text-gray-800">
+                  {jarData?.npsScore?.promoterRate
+                    ? `${Math.round(jarData.npsScore.promoterRate)}%`
+                    : '87%'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* 그래프 Section */}
+        <div className="px-4 py-6 flex flex-col gap-4">
+          {/* 그래프 추가 예정 */}
+          <Card className="flex items-center justify-center h-50 rounded-lg border border-gray-300">
+            <CardContent>
+              <p className="text-sub-body-r text-gray-600">그래프 추가 예정</p>
+            </CardContent>
+          </Card>
+          <Card className="flex items-center justify-center h-50 rounded-lg border border-gray-300">
+            <CardContent>
+              <p className="text-sub-body-r text-gray-600">그래프 추가 예정</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Reviews Section */}
+        <div className="px-4 py-6">
+          <h2 className="text-sub-title-b text-gray-800 mb-5">
+            손님의 솔직한 평가
+          </h2>
+
+          {reviews.length === 0 ? (
+            // Empty state
+            <div className="flex flex-col items-center justify-center w-full h-24">
+              <p className="text-sub-body-r mb-4">
+                아직 손님이 진행한 평가가 없어요
+              </p>
+              <Button
+                onClick={() => {
+                  window.open("https://open.kakao.com/o/sCpB58Hh", "_blank");
+                }}
+                className="w-27 h-9 bg-[#162456] text-sub-body-sb text-white rounded-[8px]"
               >
-                전체 보기
+                문의하기
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockRecentFeedbacks.map((feedback) => (
-                <div key={feedback.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-medium">{feedback.customerName}님</p>
-                      <p className="text-xs text-muted-foreground">{feedback.createdAt}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {feedback.hasReceipt && (
-                        <Badge variant="outline" className="text-xs">
-                          <CheckCircle className="mr-1 h-3 w-3" />
-                          인증
-                        </Badge>
-                      )}
-                      {feedback.photoCount > 0 && (
-                        <Badge variant="outline" className="text-xs">
-                          <ImageIcon className="mr-1 h-3 w-3" />
-                          {feedback.photoCount}
-                        </Badge>
-                      )}
+          ) : (
+            // Review Items
+            <div className="space-y-6">
+              {reviews.map((review) => (
+                <div key={review.id} className="py-4">
+                  {/* Review Header */}
+                  <div className="flex items-start gap-3 mb-3">
+                    <Image
+                      src={review.avatar || "/user_profile.png"}
+                      alt={review.userName}
+                      width={50}
+                      height={50}
+                      className="rounded-full"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-body-sb text-gray-900">
+                          {review.userName}
+                        </span>
+                        <span className="text-sub-body-r text-gray-500">
+                          {review.date}
+                        </span>
+                      </div>
+                      {/* 맛 프로필 */}
+                      <div className="flex items-center gap-3 mt-2 text-body-r text-gray-700">
+                        <div className="flex items-center gap-1">
+                          <span>🍽️ {review.servings}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>🌶️ {review.spiciness}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>💰 {review.price}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  
-                  <p className="text-sm mb-2">&ldquo;{feedback.textFeedback}&rdquo;</p>
-                  
-                  <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                    <span>재주문 의향: {feedback.reorderIntention}/10</span>
-                    <span>추천 점수: {feedback.recommendationScore}/10</span>
+
+                  {/* Review Content */}
+                  <div className="mt-4">
+                    <p className="text-body-r text-gray-700 whitespace-pre-line">
+                      {review.reviewText}
+                    </p>
                   </div>
                 </div>
               ))}
+
+              {/* 무한 스크롤 Observer Target */}
+              {hasNextPage && (
+                <div ref={observerTarget} className="py-4 text-center">
+                  {isFetchingNextPage ? (
+                    <p className="text-gray-500">더 불러오는 중...</p>
+                  ) : (
+                    <p className="text-gray-400">스크롤하여 더 보기</p>
+                  )}
+                </div>
+              )}
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </div>
       </div>
     </div>
   );

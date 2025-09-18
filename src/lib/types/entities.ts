@@ -34,12 +34,13 @@ export interface Restaurant {
 }
 
 export interface Menu {
-  id: string;
-  restaurantId: string;
+  id: number;
+  storeId: number;
   name: string;
   price: number;
   description?: string;
-  images: string[];
+  reviewCount: number;
+  imageUrl?: string;
   category?: string;
   isActive: boolean;
   createdAt: Date;
@@ -47,10 +48,10 @@ export interface Menu {
 }
 
 export interface Feedback {
-  id: string;
+  id: number;
   customerId: string;
   restaurantId: string;
-  menuId: string;
+  menuId: number;
   orderId: string;
 
   // 사전 정보

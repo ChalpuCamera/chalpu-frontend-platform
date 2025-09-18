@@ -1,9 +1,10 @@
 "use client";
 
+import { use } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, MessageSquare, Users, Calendar } from "lucide-react";
+import { ArrowLeft, MessageSquare, Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 // Mock 데이터
@@ -61,15 +62,16 @@ const mockFeedbacks = [
   }
 ];
 
-export default function CustomerMenuDetailPage({ 
-  params 
-}: { 
-  params: { foodId: string } 
+export default function CustomerMenuDetailPage({
+  params
+}: {
+  params: Promise<{ foodId: string }>
 }) {
+  const resolvedParams = use(params);
   const router = useRouter();
 
   const handleSelectForFeedback = () => {
-    router.push(`/customer/feedback/add?foodId=${params.foodId}`);
+    router.push(`/customer/feedback/add?foodId=${resolvedParams.foodId}`);
   };
 
   return (

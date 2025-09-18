@@ -14,7 +14,6 @@ export function RewardProgress({
   maxPoints = 5,
   nextReward = "편의점 상품권 5,000원"
 }: RewardProgressProps) {
-  const percentage = (currentPoints / maxPoints) * 100;
   const remaining = maxPoints - currentPoints;
 
   return (

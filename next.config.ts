@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  images: {
+    domains: ['chalpu.s3.ap-northeast-2.amazonaws.com', 'cdn.chalpu.com'],
+  },
 };
 
 export default withSentryConfig(nextConfig, {

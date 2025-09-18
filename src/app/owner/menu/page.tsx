@@ -1,120 +1,112 @@
 "use client";
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { CustomButton } from "@/components/ui/custom-button";
+import { CustomHeader } from "@/components/ui/custom-header";
+import { useFoodsByStore } from "@/lib/hooks/useFood";
 
-const StoreMenuList = () => {
+export default function Page() {
   const router = useRouter();
-  
-  const menuItems = [
-    {
-      id: 1,
-      name: "기영이 김치찌개",
-      price: "8,000원",
-      reviewCount: "32개",
-      hasImage: false
-    },
-    {
-      id: 2,
-      name: "오믈렛",
-      price: "9,000원", 
-      reviewCount: "11개",
-      hasImage: true
-    },
-    {
-      id: 3,
-      name: "김밥",
-      price: "3,000원",
-      reviewCount: "45개", 
-      hasImage: true
-    },
-    {
-      id: 4,
-      name: "제육볶음",
-      price: "11,000원",
-      reviewCount: "9개",
-      hasImage: true
-    }
-  ];
+  const { data: foodsData, isLoading } = useFoodsByStore(1);
+
+  const menuItems = foodsData?.content?.map((food) => ({
+    id: food.id || food.foodItemId, // 새 필드명 우선, 구 필드명 폴백
+    name: food.name || food.foodName || '', // 새 필드명 우선, 구 필드명 폴백
+    price: food.price,
+    reviewCount: 0, // TODO: 리뷰 수 API 추가 필요
+    imageUrl: food.photoUrl || food.thumbnailUrl || undefined, // 새 필드명 우선, 구 필드명 폴백
+  })
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div>로딩중...</div>
+      </div>
+    );
+  }
 
   const handleBack = () => {
     router.back();
   };
 
   const handleAddMenu = () => {
-    router.push('/owner/menu/add');
+    router.push("/owner/menu/add");
   };
 
   return (
-    <div className="min-h-screen bg-white w-full max-w-sm mx-auto">
+    <div className="h-screen bg-white w-full mx-auto">
       {/* Header */}
-      <div className="flex items-center h-11 px-3.5 py-2.5">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="p-0 h-6 w-6 hover:bg-transparent"
-          onClick={handleBack}
-        >
-          <ArrowLeft className="h-6 w-6 text-gray-800" />
-        </Button>
-      </div>
-
-      {/* Title */}
-      <div className="px-4 pt-1 pb-4">
-        <h1 className="text-title-2 text-gray-800">우리 가게 메뉴</h1>
-      </div>
+      <CustomHeader handleBack={handleBack} title="우리 가게 메뉴" />
 
       {/* Menu Items */}
-      <div className="space-y-2">
-        {menuItems.map((item) => (
-          <div key={item.id} className="h-30.5 px-4">
-            <div className="flex items-start gap-4 h-full py-3">
-              {/* Menu Image */}
-              <div className="w-24 h-24 bg-gray-100 border border-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
-                {item.hasImage ? (
-                  <div className="w-full h-full bg-gradient-to-br from-orange-200 to-orange-300" />
-                ) : (
-                  <div className="w-full h-full bg-gray-100" />
-                )}
-              </div>
-
-              {/* Menu Info */}
-              <div className="flex-1 flex flex-col justify-between h-24">
-                <div className="flex items-start justify-between">
-                  <h3 className="text-headline-b text-gray-800">{item.name}</h3>
-                  <Button 
-                    variant="outline" 
-                    className="h-6 px-3 text-sub-body-sb border-gray-800 text-gray-800 rounded-md hover:bg-gray-50"
-                  >
-                    자세히
-                  </Button>
+      {menuItems && menuItems.length === 0 ? (
+        <div className="fixed inset-0 pt-10 pb-60 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-2">
+            <Image src="/menu_icon.png" alt="no_menu" width={80} height={80} />
+            <div className="text-center text-sub-body-r text-black">
+              아직 등록된 메뉴가 없어요.
+              <br />
+              메뉴를 등록하고 솔직한 평가를 받아보세요.
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2 pt-30 pb-25">
+          {menuItems && menuItems.map((item) => (
+            <div key={item.id} className="px-4 py-2.5">
+              <div className="flex items-center gap-4 h-25 w-full">
+                {/* Menu Image */}
+                <div className="w-25 h-25 bg-gray-100 border border-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
+                  {item.imageUrl ? (
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.name}
+                      width={98}
+                      height={98}
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100" />
+                  )}
                 </div>
-                
-                <p className="text-headline-m text-gray-600">{item.price}</p>
-                
-                <div className="flex items-center gap-0.5">
-                  <span className="text-body-sb text-gray-800">✨</span>
-                  <span className="text-body-sb text-blue-600">{item.reviewCount}</span>
-                  <span className="text-body-r text-gray-800">의 평가가 있어요</span>
+
+                {/* Menu Info */}
+                <div className="flex-1 flex flex-col justify-between h-full py-1">
+                  <div className="flex items-center justify-between w-full">
+                    <div className="text-headline-b text-gray-800">
+                      {item.name}
+                    </div>
+                    <button className="px-3 py-1 text-sub-body-sb text-gray-800 border border-gray-800 rounded-[6px]"
+                    onClick={() => router.push(`/owner/menu/${item.id || 0}`)}>
+                      자세히
+                    </button>
+                  </div>
+
+                  <div className="text-headline-m text-gray-600">
+                    {item.price}원
+                  </div>
+
+                  <div className="flex items-center gap-0.5">
+                    <span className="text-body-sb text-blue-700">
+                      ✨{item.reviewCount}개
+                    </span>
+                    <span className="text-body-r text-gray-800">
+                      의 평가가 있어요
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto p-4 bg-white">
-        <button 
-          className="w-full h-14 bg-blue-950 hover:bg-blue-900 text-white text-body-sb rounded-lg transition-colors"
-          onClick={handleAddMenu}
-        >
-          메뉴 추가하기
-        </button>
+      <div className="fixed bottom-0 left-0 right-0 pb-6 flex justify-center px-4 bg-white outline-1 outline-transparent">
+        <CustomButton onClick={handleAddMenu}>메뉴 추가하기</CustomButton>
       </div>
     </div>
   );
-};
-
-export default StoreMenuList;
+}

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Clock, CheckCircle, XCircle } from "lucide-react";
+import { Clock, CheckCircle } from "lucide-react";
 
 // Mock 데이터
 const mockFeedbackHistory = {

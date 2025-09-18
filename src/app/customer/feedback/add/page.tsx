@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Camera, Upload, CheckCircle } from "lucide-react";
 
-export default function AddFeedbackPage() {
+function AddFeedbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const foodId = searchParams.get("foodId");
@@ -269,5 +269,13 @@ export default function AddFeedbackPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AddFeedbackPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AddFeedbackContent />
+    </Suspense>
   );
 }

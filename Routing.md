@@ -22,77 +22,66 @@ O-07 | 마이페이지(대시보드/홈페이지로 통합?) | 사장님 |  |
 O-08 | 가게 등록 페이지 | 사장님 | 사장님 가게 등록 | 가게 이름, 가게 주소, 가게 설명 입력
 O-09 | 가게 수정 페이지 | 사장님 | 사장님 가게 수정 | 가게 이름, 가게 주소, 가게 설명 수정
 ----------------------------------------
-app/
+src/app/
 ├── globals.css
 ├── layout.tsx                # 루트 레이아웃
 ├── page.tsx                  # 메인 페이지 (사용자 분기 페이지)
 ├── (auth)/                   # Route Group - 인증 관련
-│   ├── layout.tsx            # 인증 레이아웃
-│   ├── login/                # 카카오 로그인
-│   │   └── page.tsx
-│   └── onboarding/           # 온보딩/튜토리얼
+│   └── login/                # 카카오 로그인
 │       └── page.tsx
 ├── customer/                 # 손님 전용 페이지
-│   ├── layout.tsx            # 손님 레이아웃 (하단 네비 등)
 │   ├── page.tsx              # 손님 홈
 │   ├── menu/
 │   │   ├── page.tsx          # 가게-메뉴 목록
-│   │   └── [id]/
-│   │       └── page.tsx      # 가게-메뉴 상세
+│   │   └── [foodId]/
+│   │       └── page.tsx      # 메뉴 상세
 │   ├── feedback/
-│   │   ├── verify/           # 주문 인증
-│   │   │   └── page.tsx
-│   │   ├── pre/              # 사전 피드백
-│   │   │   └── page.tsx
-│   │   ├── post/             # 사후 피드백
-│   │   │   └── page.tsx
-│   │   ├── message/          # 한마디 작성
-│   │   │   └── page.tsx
-│   │   └── complete/         # 피드백 완료
+│   │   └── add/              # 피드백 작성
 │   │       └── page.tsx
 │   ├── mypage/
 │   │   └── page.tsx          # 마이페이지
-│   ├── feedbacks/            # 피드백 내역
+│   ├── history/              # 피드백 내역
 │   │   └── page.tsx
 │   └── rewards/              # 리워드
 │       └── page.tsx
 └── owner/                    # 사장님 전용 페이지
-    ├── layout.tsx            # 사장님 레이아웃 (사이드바 등)
     ├── page.tsx              # 대시보드/홈
-    ├── restaurants/
+    ├── onboarding/           # 온보딩
+    │   └── page.tsx
+    ├── store/
     │   ├── page.tsx          # 가게 관리
-    │   ├── new/              # 가게 등록
+    │   ├── add/              # 가게 등록
     │   │   └── page.tsx
-    │   └── [id]/
-    │       ├── page.tsx      # 가게 상세
-    │       ├── edit/         # 가게 수정
+    │   └── [storeId]/
+    │       └── page.tsx      # 가게 상세
+    ├── menu/
+    │   ├── page.tsx          # 메뉴 목록
+    │   ├── add/              # 메뉴 등록
+    │   │   └── page.tsx
+    │   └── [foodId]/
+    │       ├── page.tsx      # 메뉴 상세
+    │       ├── edit/         # 메뉴 수정
     │       │   └── page.tsx
-    │       ├── menu/         # 메뉴 관리
-    │           ├── page.tsx  # 메뉴 목록
-    │           ├── new/      # 메뉴 등록
-    │           │   └── page.tsx
-    │           └── [menuId]/
-    │               ├── page.tsx      # 메뉴 상세
-    │               └── edit/         # 메뉴 수정
-    │                   └── page.tsx
-    │               └── analytics/    # 통계 분석
-    │                   └── page.tsx
+    │       └── analytics/    # 통계 분석
+    │           └── page.tsx
+    ├── feedbacks/            # 피드백 관리
+    │   └── page.tsx
     └── mypage/
         └── page.tsx          # 마이페이지
 
-components/
+src/components/
 ├── ui/                       # shadcn/ui 컴포넌트
 ├── customer/                 # 손님 전용 컴포넌트
 ├── owner/                    # 사장님 전용 컴포넌트
 └── common/                   # 공통 컴포넌트
 
-lib/
+src/lib/
 ├── auth.ts                   # 인증 관련 유틸
 ├── api.ts                    # API 클라이언트
 ├── utils.ts                  # 공통 유틸리티
 └── types.ts                  # TypeScript 타입 정의
 
-stores/
+src/stores/
 ├── auth.ts                   # 공통 인증 상태
 ├── customer.ts               # 손님 관련 상태
 ├── owner.ts                  # 사장님 관련 상태

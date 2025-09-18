@@ -40,11 +40,7 @@ const mockStoreData = {
   }
 };
 
-export default function StoreDetailPage({ 
-  params 
-}: { 
-  params: { storeId: string } 
-}) {
+export default function StoreDetailPage() {
   const router = useRouter();
   const [storeData, setStoreData] = useState(mockStoreData);
   const [isEditing, setIsEditing] = useState(false);

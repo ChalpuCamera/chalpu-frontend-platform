@@ -191,11 +191,6 @@ src/
    - Use Tailwind spacing utilities (p-4, m-2, gap-3)
    - Maintain consistent spacing based on 4px/8px grid
 
-4. **Typography**
-   - Use Tailwind typography utilities
-   - Font sizes: text-xs, text-sm, text-base, text-lg, text-xl, etc.
-   - Font weights: font-normal, font-medium, font-semibold, font-bold
-
 5. **Responsive Design**
    - Mobile-first approach
    - Use Tailwind responsive prefixes: sm:, md:, lg:, xl:, 2xl:

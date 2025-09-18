@@ -9,15 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Store, 
-  User, 
-  Clock, 
-  MapPin, 
+import {
+  Store,
+  User,
+  Clock,
+  MapPin,
   Phone,
   Save,
-  Plus,
-  Edit
+  Plus
 } from "lucide-react";
 
 // Mock 데이터

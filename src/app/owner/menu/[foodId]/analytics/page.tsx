@@ -1,24 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   TrendingDown,
-  Users, 
   MessageSquare,
   BarChart3,
   ArrowLeft,
-  ArrowUp,
-  ArrowDown,
   Target,
   Lightbulb,
-  Calendar,
-  DollarSign,
   ThumbsUp,
   ThumbsDown
 } from "lucide-react";
@@ -130,19 +125,15 @@ const mockMenuAnalytics = {
   ]
 };
 
-export default function MenuAnalyticsPage({ 
-  params 
-}: { 
-  params: { foodId: string } 
+export default function MenuAnalyticsPage({
+  params
+}: {
+  params: Promise<{ foodId: string }>
 }) {
+  const resolvedParams = use(params);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("overview");
 
-  const getTrendIcon = (growth: number) => {
-    if (growth > 0) return <ArrowUp className="h-4 w-4 text-green-600" />;
-    if (growth < 0) return <ArrowDown className="h-4 w-4 text-red-600" />;
-    return <span className="text-muted-foreground">-</span>;
-  };
 
   return (
     <div className="min-h-screen bg-background p-5">
@@ -165,7 +156,7 @@ export default function MenuAnalyticsPage({
             </div>
           </div>
           
-          <Button onClick={() => router.push(`/owner/menu/${params.foodId}`)}>
+          <Button onClick={() => router.push(`/owner/menu/${resolvedParams.foodId}`)}>
             메뉴 상세
           </Button>
         </div>

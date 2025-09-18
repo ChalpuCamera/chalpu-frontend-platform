@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { QueryProvider } from "@/lib/providers/query-provider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,9 +16,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`pb-16`}
+        className={`antialiased`}
+        style={{
+          fontFamily:
+            'Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        }}
       >
-        {children}
+        <QueryProvider>
+          {children}
+          <Toaster position="top-center" />
+        </QueryProvider>
       </body>
     </html>
   );

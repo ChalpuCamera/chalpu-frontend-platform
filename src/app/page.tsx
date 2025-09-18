@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -18,7 +17,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-5">
+    <div className="min-h-screen mx-auto flex flex-col items-center justify-center p-5">
       <div className="w-full max-w-md space-y-10">
         {/* 헤더 */}
         <div className="flex flex-col items-center space-y-4">
@@ -34,7 +33,7 @@ export default function LoginPage() {
         <div className="flex justify-center">
           <Image
             className="w-full h-auto"
-            src="/image.png"
+            src="/mock.png"
             alt="Promotion"
             width={343}
             height={256}
@@ -43,19 +42,19 @@ export default function LoginPage() {
 
         {/* 로그인 버튼 */}
         <div className="flex flex-col gap-4">
-          <Button
-            className="rounded-[12px] w-full h-14 text-lg bg-[#FFE812] hover:bg-[#FDD835] text-[#3C1E1C] font-bold"
+          <button
+            className="flex items-center justify-center gap-2 rounded-[12px] text-headline-b w-full h-14 bg-[#FFE812] text-[#3C1E1C]"
             onClick={handleKakaoLogin}
           >
             <Image src="/kakao_icon.png" alt="Kakao" width={24} height={24} />
             {userType === "customer"
               ? "카카오로 계속하기"
               : "카카오로 로그인하기"}
-          </Button>
+          </button>
           {/* 사용자 분기 */}
           <div
-            className={`text-center text-base text-[#595959] ${
-              userType === "customer" ? "font-semibold" : "font-400"
+            className={`text-center text-[#595959] ${
+              userType === "customer" ? "text-body-sb" : "text-body-r"
             }`}
             onClick={() => {
               if (userType === "customer") {
