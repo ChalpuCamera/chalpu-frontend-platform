@@ -64,8 +64,11 @@ export const transformFeedbackToReview = (
   feedback: FeedbackResponse,
   tasteProfile?: CustomerTasteDto
 ): ReviewDisplayData => {
+  // surveyAnswers가 없는 경우 빈 배열로 처리
+  const surveyAnswers = feedback.surveyAnswers || [];
+
   // questionId 9번 찾기 (리뷰 텍스트)
-  const reviewAnswer = feedback.surveyAnswers.find(answer => answer.questionId === 9);
+  const reviewAnswer = surveyAnswers.find(answer => answer.questionId === 9);
   const reviewText = reviewAnswer?.answerText || '';
 
   // Mock 맛 프로필 가져오기 (실제로는 API 호출 필요)
@@ -77,21 +80,21 @@ export const transformFeedbackToReview = (
 
   return {
     id: feedback.id,
-    userName: feedback.userNickname,
-    date: formatDate(feedback.createdAt),
-    menuName: feedback.foodName,
+    userName: feedback.userNickname || '익명',
+    date: feedback.createdAt ? formatDate(feedback.createdAt) : '',
+    menuName: feedback.foodName || '',
     reviewText,
     servings: getServingsText(profile.mealAmount),
     spiciness: getSpicinessText(profile.spicyLevel),
     price: getPriceText(profile.mealSpending),
-    photoUrls: feedback.photoUrls,
+    photoUrls: feedback.photoUrls || [],
   };
 };
 
 // Mock 리뷰 데이터 (개발/테스트용)
 const mockReviews: ReviewDisplayData[] = [
   {
-    id: 1,
+    id: 101,
     userName: "별내심슨",
     date: "2025. 09. 09",
     menuName: "기영이네 김치찌개",
@@ -101,7 +104,7 @@ const mockReviews: ReviewDisplayData[] = [
     reviewText: "김치찌개 간도 적당하고 너무 맛있어요! \n옵션 추가로 청양고추 추가 있었으면 좋겠습니다.\n조금더 칼칼했으면 좋겠어요",
   },
   {
-    id: 2,
+    id: 102,
     userName: "신림동베트맨",
     date: "2025. 06. 09",
     menuName: "제육볶음",
@@ -111,7 +114,7 @@ const mockReviews: ReviewDisplayData[] = [
     reviewText: "양도 적당하고 맛있어요. 조금 더 덜 달게 해주시면 좋을 것 같습니다. 매운거 못 먹는데 맵기도 괜찮았어요!!",
   },
   {
-    id: 3,
+    id: 103,
     userName: "송파나부랭이",
     date: "2025. 5. 11",
     menuName: "오삼불고기",
@@ -195,10 +198,29 @@ export const feedbackApi = {
     try {
       const response = await feedbackApi.getStoreFeedbacks(storeId, pageable);
 
-      if (response.code === 200 && response.result) {
-        return response.result.content.map(feedback =>
-          transformFeedbackToReview(feedback)
-        );
+      if (response?.code === 200 && response?.result?.content) {
+        // null/undefined 체크 및 필터링
+        return response.result.content
+          .filter(feedback => feedback && typeof feedback === 'object')
+          .map(feedback => {
+            try {
+              return transformFeedbackToReview(feedback);
+            } catch (err) {
+              console.error('Failed to transform feedback:', err, feedback);
+              // 변환 실패 시 기본값 반환
+              return {
+                id: feedback?.id || Math.random(),
+                userName: feedback?.userNickname || '익명',
+                date: feedback?.createdAt ? formatDate(feedback.createdAt) : '',
+                menuName: feedback?.foodName || '',
+                reviewText: '',
+                servings: '1인분',
+                spiciness: '보통',
+                price: '2만원',
+                photoUrls: feedback?.photoUrls || [],
+              };
+            }
+          });
       }
     } catch (error) {
       console.error('Failed to fetch store feedbacks:', error);
@@ -213,10 +235,29 @@ export const feedbackApi = {
     try {
       const response = await feedbackApi.getFoodFeedbacks(foodId, pageable);
 
-      if (response.code === 200 && response.result) {
-        return response.result.content.map(feedback =>
-          transformFeedbackToReview(feedback)
-        );
+      if (response?.code === 200 && response?.result?.content) {
+        // null/undefined 체크 및 필터링
+        return response.result.content
+          .filter(feedback => feedback && typeof feedback === 'object')
+          .map(feedback => {
+            try {
+              return transformFeedbackToReview(feedback);
+            } catch (err) {
+              console.error('Failed to transform feedback:', err, feedback);
+              // 변환 실패 시 기본값 반환
+              return {
+                id: feedback?.id || Math.random(),
+                userName: feedback?.userNickname || '익명',
+                date: feedback?.createdAt ? formatDate(feedback.createdAt) : '',
+                menuName: feedback?.foodName || '',
+                reviewText: '',
+                servings: '1인분',
+                spiciness: '보통',
+                price: '2만원',
+                photoUrls: feedback?.photoUrls || [],
+              };
+            }
+          });
       }
     } catch (error) {
       console.error('Failed to fetch food feedbacks:', error);

@@ -1,129 +1,137 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Settings, ChevronRight, Gift, MessageSquare } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-// Mock 데이터
-const mockUserData = {
-  name: "김고객",
-  joinDate: "2024.01.01",
-  feedbackCount: 12,
-  currentPoints: 3,
-  recentFeedbacks: [
-    { id: 1, menu: "김치찌개", restaurant: "김밥천국", date: "2024.01.09" },
-    { id: 2, menu: "된장찌개", restaurant: "맛있는 식당", date: "2024.01.08" },
-  ],
-};
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCustomerProfile } from "@/lib/hooks/useCustomer";
+import { useRewardBalance } from "@/lib/hooks/useCustomerReward";
+import { useMyFeedbacks } from "@/lib/hooks/useCustomerFeedback";
 
 export default function CustomerMyPage() {
   const router = useRouter();
+  const { data: profile, isLoading: profileLoading } = useCustomerProfile();
+  const { data: rewardBalance, isLoading: rewardLoading } = useRewardBalance();
+  const { data: feedbackHistory, isLoading: feedbackLoading } = useMyFeedbacks({ size: 1 });
+
+  if (profileLoading || rewardLoading || feedbackLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="flex flex-col gap-6 p-5 pt-16 mx-auto max-w-md">
+          <Skeleton className="h-8 w-48" />
+          <div className="flex gap-4">
+            <Skeleton className="w-20 h-20 rounded-full" />
+            <div className="flex-1">
+              <Skeleton className="h-6 w-32 mb-2" />
+              <Skeleton className="h-4 w-48 mb-1" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+          <Skeleton className="h-32 w-full" />
+          <Skeleton className="h-36 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  const recentFeedback = feedbackHistory?.content?.[0];
 
   return (
-    <div className="min-h-screen bg-background p-5">
-      <div className="w-full max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-background">
+      <div className="flex flex-col gap-6 p-5 pt-16 mx-auto max-w-md">
         {/* 헤더 */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">마이페이지</h1>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
+          <h1 className="text-2xl font-bold">🏠 마이페이지</h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => console.log("설정")}
+            className="px-4 py-2"
+          >
+            설정
           </Button>
         </div>
 
         {/* 사용자 정보 */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback className="text-xl">
-                  {mockUserData.name[0]}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold">{mockUserData.name}님</h2>
-                <p className="text-sm text-muted-foreground">
-                  가입일: {mockUserData.joinDate}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  피드백 횟수: {mockUserData.feedbackCount}개
-                </p>
-              </div>
+        <Card className="border-0 shadow-none p-0">
+          <div className="flex gap-4 items-start">
+            <div className="w-20 h-20 bg-muted rounded-full overflow-hidden border border-foreground flex items-center justify-center">
+              <Image
+                src="/user_profile.png"
+                alt="Profile"
+                width={80}
+                height={80}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                  (e.target as HTMLImageElement).parentElement!.innerHTML = '👤';
+                }}
+              />
             </div>
-          </CardContent>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold mb-2">{profile?.name || '사용자'}</h2>
+              <p className="text-sm text-muted-foreground mb-1">
+                {profile?.joinDate ? `${new Date(profile.joinDate).toLocaleDateString('ko-KR')} 가입` : ''}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                피드백 작성수: {profile?.totalFeedbacks || 0}개
+              </p>
+            </div>
+          </div>
         </Card>
 
-        {/* 최근 피드백 */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5" />
-                <CardTitle>최근 피드백</CardTitle>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
+        {/* 피드백 내역 */}
+        <Card className="border border-foreground p-0">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-4">📝 피드백 작성 내역</h3>
+            {recentFeedback ? (
+              <div
+                className="flex justify-between items-center cursor-pointer hover:bg-muted/50 p-2 -m-2 rounded"
                 onClick={() => router.push("/customer/history")}
               >
-                전체보기
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockUserData.recentFeedbacks.map((feedback) => (
-                <div
-                  key={feedback.id}
-                  className="flex items-center justify-between py-3 border-b last:border-0"
-                >
-                  <div>
-                    <p className="font-medium">{feedback.menu}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {feedback.restaurant} · {feedback.date}
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-medium">{recentFeedback.foodName}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(recentFeedback.createdAt).toLocaleDateString('ko-KR')}
+                  </p>
                 </div>
-              ))}
-            </div>
+                {/* TODO: Add reward display when available */}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                아직 작성한 피드백이 없습니다
+              </p>
+            )}
           </CardContent>
         </Card>
 
         {/* 리워드 요약 */}
         <Card
-          className="cursor-pointer hover:shadow-md transition-shadow"
+          className="border border-foreground p-0 cursor-pointer hover:bg-muted/50 transition-colors"
           onClick={() => router.push("/customer/rewards")}
         >
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Gift className="h-5 w-5" />
-                <CardTitle>내 리워드</CardTitle>
-              </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-base font-medium">🎁 내 리워드</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-xs"
+              >
+                자세히 보기
+                <ChevronRight className="ml-1 h-3 w-3" />
+              </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <p className="text-2xl font-bold">
-                {mockUserData.currentPoints} 포인트
-              </p>
-              <p className="text-sm text-muted-foreground">
-                5포인트 모으면 상품권 교환 가능
-              </p>
-              <div className="flex space-x-1 mt-3">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-2 w-12 rounded ${
-                      i < mockUserData.currentPoints ? "bg-primary" : "bg-muted"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+            <p className="text-2xl font-bold mb-2">
+              현재 {rewardBalance?.currentBalance || 0} 포인트
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {rewardBalance && rewardBalance.currentBalance >= 5
+                ? '교환 가능한 상품권이 있습니다!'
+                : `${5 - (rewardBalance?.currentBalance || 0)}포인트 더 모으면 교환 가능해요!`}
+            </p>
           </CardContent>
         </Card>
       </div>

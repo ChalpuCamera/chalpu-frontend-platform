@@ -35,7 +35,7 @@ const mockStoreProfile = {
 };
 
 
-export default function OwnerDashboardPage() {
+export default function Page() {
   const router = useRouter();
 
   // React Query hooks
@@ -232,8 +232,8 @@ export default function OwnerDashboardPage() {
         ) : (
           // Review Items
           <div className="space-y-6">
-            {reviews.map((review) => (
-              <div key={review.id} className="py-4">
+            {reviews.map((review, index) => (
+              <div key={`review-${review.id || index}`} className="py-4">
                 {/* Review Header */}
                 <div className="flex items-start gap-3 mb-3">
                   <Image
