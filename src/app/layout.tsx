@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { QueryProvider } from "@/lib/providers/query-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -23,7 +24,9 @@ export default function RootLayout({
         }}
       >
         <QueryProvider>
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
           <Toaster position="top-center" />
         </QueryProvider>
       </body>

@@ -33,7 +33,7 @@ export default function Page() {
         description,
       });
       if (response.storeId) {
-        router.push(`/owner`);
+        router.push(`/owner/home`);
       }
     } catch (error) {
       console.error("Store creation failed:", error);

@@ -5,15 +5,39 @@
 
 import * as Sentry from "@sentry/nextjs";
 
+// Environment checks
+const isDevelopment = process.env.NODE_ENV === 'development';
+const isProduction = process.env.NODE_ENV === 'production';
+
 Sentry.init({
-  dsn: "https://1e251985eac7a7e0d3ff50bc293927c5@o4509717350383616.ingest.us.sentry.io/4509992760967168",
+  // Disable Sentry in development
+  dsn: isDevelopment
+    ? undefined
+    : process.env.NEXT_PUBLIC_SENTRY_DSN || "https://1e251985eac7a7e0d3ff50bc293927c5@o4509717350383616.ingest.us.sentry.io/4509992760967168",
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+  // Environment tag
+  environment: process.env.NODE_ENV,
 
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
+  // Sampling: 0% in development, 10% in production
+  tracesSampleRate: isDevelopment ? 0 : 0.1,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
+  // Enable logs only in production
+  enableLogs: isProduction,
+
+  // Debug mode only in development (but Sentry is disabled anyway)
+  debug: isDevelopment,
+
+  // Filter out development events
+  beforeSend(event, hint) {
+    // Don't send events in development
+    if (isDevelopment) {
+      console.log('[Sentry Edge Dev Mode] Event captured but not sent:', {
+        message: event.message,
+        level: event.level,
+        error: hint.originalException,
+      });
+      return null;
+    }
+    return event;
+  },
 });
